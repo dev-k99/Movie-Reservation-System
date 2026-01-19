@@ -18,7 +18,7 @@
     "sequelize",
     "mysql"
   ],
-  "author": "Your Name",
+  "author": "Kwanele Ntshangase",
   "license": "MIT",
   "dependencies": {
     "bcrypt": "^5.1.1",

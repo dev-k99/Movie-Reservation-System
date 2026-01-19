@@ -4,7 +4,7 @@ require('dotenv').config();
 const sequelize = new Sequelize(
   process.env.DB_NAME || 'movie_reservation',
   process.env.DB_USER || 'root',
-  process.env.DB_PASSWORD || '',
+  process.env.DB_PASSWORD || 'root123',
   {
     host: process.env.DB_HOST || 'localhost',
     dialect: 'mysql',
@@ -31,15 +31,20 @@ const testConnection = async () => {
   }
 };
 
-// Sync database
-const syncDatabase = async (force = false) => {
+// Sync database (safe & flexible)
+const syncDatabase = async ({ force = false, alter = false } = {}) => {
   try {
-    await sequelize.sync({ force });
-    console.log(`✅ Database synced successfully${force ? ' (force mode)' : ''}.`);
+    await sequelize.sync({ force, alter });
+
+    console.log(
+      `✅ Database synced successfully (force=${force}, alter=${alter})`
+    );
   } catch (error) {
     console.error('❌ Error syncing database:', error);
+    throw error; // important so server startup fails properly
   }
 };
+
 
 // Seed initial data
 const seedData = async () => {

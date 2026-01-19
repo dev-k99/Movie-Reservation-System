@@ -48,6 +48,8 @@ app.use((req, res) => {
 // Error handler (must be last)
 app.use(errorHandler);
 
+const isDev = process.env.NODE_ENV !== 'production';
+
 // Initialize database and start server
 const startServer = async () => {
   try {
@@ -55,7 +57,10 @@ const startServer = async () => {
     await testConnection();
 
     // Sync database (set force: true to reset database)
-    await syncDatabase(process.env.DB_FORCE_SYNC === 'true');
+    await syncDatabase({
+    force: isDev && process.env.DB_FORCE_SYNC === 'true',
+    alter: !isDev
+    });
 
     // Seed initial data
     await seedData();
