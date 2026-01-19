@@ -1,13 +1,17 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
+// PostgreSQL connection (works with both local and Render)
 const sequelize = new Sequelize(
-  process.env.DB_NAME || 'movie_reservation',
-  process.env.DB_USER || 'root',
-  process.env.DB_PASSWORD || 'root123',
+  process.env.DATABASE_URL || `postgres://${process.env.DB_USER || 'postgres'}:${process.env.DB_PASSWORD || 'postgres'}@${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || '5432'}/${process.env.DB_NAME || 'movie_reservation'}`,
   {
-    host: process.env.DB_HOST || 'localhost',
-    dialect: 'mysql',
+    dialect: 'postgres',
+    dialectOptions: process.env.NODE_ENV === 'production' ? {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    } : {},
     logging: process.env.NODE_ENV === 'development' ? console.log : false,
     pool: {
       max: 5,
