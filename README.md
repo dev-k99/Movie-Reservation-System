@@ -3,20 +3,7 @@
 
 ---
 
-## 📋 Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Database Schema](#database-schema)
-- [Getting Started](#getting-started)
-- [API Documentation](#api-documentation)
-- [Business Logic](#business-logic)
-- [Security](#security)
-- [Testing](#testing)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
-- [License](#license)
+[Live API Demo](https://movie-reservation-api-h99d.onrender.com/health)
 
 ---
 
@@ -70,13 +57,6 @@ This Movie Reservation System is an advanced backend application that handles th
 - ✅ Cancellation for upcoming shows only
 - ✅ Automatic seat pool management
 
-#### 📊 Admin Reporting & Analytics
-- ✅ Overall statistics dashboard
-- ✅ Revenue reports (by showtime, movie, date range)
-- ✅ Capacity and occupancy analysis
-- ✅ Popular movies ranking
-- ✅ Peak time analysis
-- ✅ Booking trends visualization
 
 ---
 
@@ -94,10 +74,6 @@ This Movie Reservation System is an advanced backend application that handles th
 - **cors**: Cross-origin resource sharing
 - **dotenv**: Environment configuration
 - **mysql2**: MySQL database driver
-
-### Development Tools
-- **nodemon**: Auto-restart during development
-- **Postman**: API testing
 
 ---
 
@@ -179,17 +155,6 @@ erDiagram
     }
 ```
 
-### Key Relationships
-
-1. **User → Reservations**: One-to-Many (A user can have multiple reservations)
-2. **Movie → Showtimes**: One-to-Many (A movie can have multiple showtimes)
-3. **Theater → Showtimes**: One-to-Many (A theater can host multiple showtimes)
-4. **Theater → Seats**: One-to-Many (A theater contains multiple seats)
-5. **Showtime → Reservations**: One-to-Many (A showtime can have multiple reservations)
-6. **Reservation → ReservedSeats**: One-to-Many (A reservation can include multiple seats)
-7. **Seat → ReservedSeats**: One-to-Many (A seat can be reserved for multiple showtimes)
-
----
 
 ## 🚀 Getting Started
 
@@ -205,7 +170,7 @@ erDiagram
 #### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/movie-reservation-system.git
+git clone https://github.com/dev-k99/Movie-Reservation-System
 cd movie-reservation-system
 ```
 
@@ -215,18 +180,6 @@ cd movie-reservation-system
 npm install
 ```
 
-#### 3. Set Up MySQL Database
-
-```sql
--- Login to MySQL
-mysql -u root -p
-
--- Create database
-CREATE DATABASE movie_reservation;
-
--- Exit MySQL
-exit;
-```
 
 #### 4. Configure Environment Variables
 
@@ -238,23 +191,6 @@ cp .env.example .env
 
 Update `.env` with your configuration:
 
-```env
-# Server Configuration
-PORT=3000
-NODE_ENV=development
-
-# Database Configuration
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_mysql_password
-DB_NAME=movie_reservation
-
-# Set to true ONLY for first-time setup (will reset database)
-DB_FORCE_SYNC=true
-
-# JWT Configuration
-JWT_SECRET=your-super-secret-jwt-key-min-32-characters
-```
 
 #### 5. Initialize Database (First Time Only)
 
@@ -283,71 +219,6 @@ The API will be available at `http://localhost:3000`
 http://localhost:3000/api
 ```
 
-### Authentication
-
-Include JWT token in the Authorization header:
-
-```
-Authorization: Bearer <your_jwt_token>
-```
-
----
-
-### 🔐 Authentication Endpoints
-
-#### Register User
-```http
-POST /api/auth/register
-Content-Type: application/json
-
-{
-  "email": "john.doe@example.com",
-  "password": "SecurePass123!",
-  "firstName": "John",
-  "lastName": "Doe"
-}
-```
-
-**Response: 201 Created**
-```json
-{
-  "success": true,
-  "message": "User registered successfully",
-  "data": {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "user": {
-      "id": "uuid",
-      "email": "john.doe@example.com",
-      "firstName": "John",
-      "lastName": "Doe",
-      "role": "user"
-    }
-  }
-}
-```
-
-#### Login
-```http
-POST /api/auth/login
-Content-Type: application/json
-
-{
-  "email": "admin@moviereservation.com",
-  "password": "Admin123!"
-}
-```
-
-#### Get Current User
-```http
-GET /api/auth/me
-Authorization: Bearer <token>
-```
-
-#### Promote User to Admin (Admin Only)
-```http
-PUT /api/auth/promote/:userId
-Authorization: Bearer <admin_token>
-```
 
 ---
 
@@ -355,16 +226,9 @@ Authorization: Bearer <admin_token>
 
 #### Get All Movies
 ```http
-GET /api/movies?genre=Action&search=dark&page=1&limit=10
+GET https://movie-reservation-api-h99d.onrender.com/api/movies
 ```
 
-**Query Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| genre | string | Filter by genre |
-| search | string | Search in title/description |
-| page | integer | Page number (default: 1) |
-| limit | integer | Items per page (default: 10) |
 
 #### Get Single Movie
 ```http
@@ -374,8 +238,6 @@ GET /api/movies/:id
 #### Create Movie (Admin Only)
 ```http
 POST /api/movies
-Authorization: Bearer <admin_token>
-Content-Type: application/json
 
 {
   "title": "The Matrix",
@@ -391,8 +253,6 @@ Content-Type: application/json
 #### Update Movie (Admin Only)
 ```http
 PUT /api/movies/:id
-Authorization: Bearer <admin_token>
-Content-Type: application/json
 
 {
   "rating": 9.0,
@@ -422,9 +282,6 @@ GET /api/showtimes?date=2024-01-20&movieId=uuid
 
 **Required Query Parameters:**
 - `date`: Date in YYYY-MM-DD format
-
-**Optional Query Parameters:**
-- `movieId`: Filter by specific movie
 
 #### Get Showtime with Available Seats
 ```http
@@ -787,230 +644,6 @@ const generateBookingReference = () => {
 - **Cascading Deletes**: Maintains referential integrity
 - **Unique Constraints**: Prevents duplicate entries
 
-### Best Practices
-```javascript
-// Never expose passwords
-attributes: { exclude: ['password'] }
-
-// Validate user ownership
-if (reservation.userId !== req.user.id) {
-  return res.status(403).json({ message: 'Forbidden' });
-}
-
-// Use environment variables
-const secret = process.env.JWT_SECRET;
-```
-
----
-
-## 🧪 Testing
-
-### Manual Testing with Postman
-
-#### Test Flow
-
-1. **Register User**
-   ```
-   POST /api/auth/register
-   ```
-
-2. **Login** (get token)
-   ```
-   POST /api/auth/login
-   ```
-
-3. **Get Movies**
-   ```
-   GET /api/movies
-   ```
-
-4. **Get Showtimes**
-   ```
-   GET /api/showtimes?date=2024-01-20
-   ```
-
-5. **Get Showtime with Seats**
-   ```
-   GET /api/showtimes/:id
-   ```
-
-6. **Create Reservation**
-   ```
-   POST /api/reservations
-   Headers: Authorization: Bearer <token>
-   Body: { "showtimeId": "...", "seatIds": [...] }
-   ```
-
-7. **View Reservations**
-   ```
-   GET /api/reservations/my-reservations
-   ```
-
-8. **Cancel Reservation**
-   ```
-   DELETE /api/reservations/:id
-   ```
-
-### Admin Testing
-
-1. **Login as Admin**
-   ```
-   Email: admin@moviereservation.com
-   Password: Admin123!
-   ```
-
-2. **Create Movie**
-   ```
-   POST /api/movies
-   ```
-
-3. **Create Showtime**
-   ```
-   POST /api/showtimes
-   ```
-
-4. **View Reports**
-   ```
-   GET /api/reports/stats
-   GET /api/reports/revenue?startDate=2024-01-01&endDate=2024-01-31
-   ```
-
-### Testing Concurrent Bookings
-
-Open two terminal windows and run curl commands simultaneously:
-
-**Terminal 1:**
-```bash
-curl -X POST http://localhost:3000/api/reservations \
-  -H "Authorization: Bearer <token1>" \
-  -H "Content-Type: application/json" \
-  -d '{"showtimeId":"uuid","seatIds":["seat1"]}'
-```
-
-**Terminal 2:**
-```bash
-curl -X POST http://localhost:3000/api/reservations \
-  -H "Authorization: Bearer <token2>" \
-  -H "Content-Type: application/json" \
-  -d '{"showtimeId":"uuid","seatIds":["seat1"]}'
-```
-
-**Expected**: One succeeds, one gets "Seats already reserved" error.
-
----
-
-## 🚀 Deployment
-
-### Environment Setup
-
-1. **Production Environment Variables**
-```env
-NODE_ENV=production
-PORT=80
-DB_HOST=your-production-db-host
-DB_USER=production_user
-DB_PASSWORD=strong_password
-DB_NAME=movie_reservation_prod
-DB_FORCE_SYNC=false
-JWT_SECRET=very-strong-secret-min-64-characters
-```
-
-2. **Database Migration**
-```bash
-# Create production database
-mysql -u root -p -e "CREATE DATABASE movie_reservation_prod;"
-
-# Run migrations
-npm start
-```
-
-### Deployment Options
-
-#### Option 1: Traditional Server (VPS)
-
-```bash
-# Install Node.js on server
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt-get install -y nodejs
-
-# Install PM2 for process management
-sudo npm install -g pm2
-
-# Clone and setup
-git clone https://github.com/yourusername/movie-reservation-system.git
-cd movie-reservation-system
-npm install --production
-
-# Start with PM2
-pm2 start server.js --name movie-api
-pm2 startup
-pm2 save
-```
-
-#### Option 2: Docker
-
-Create `Dockerfile`:
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm install --production
-COPY . .
-EXPOSE 3000
-CMD ["node", "server.js"]
-```
-
-Create `docker-compose.yml`:
-```yaml
-version: '3.8'
-services:
-  api:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      - DB_HOST=mysql
-      - DB_USER=root
-      - DB_PASSWORD=password
-      - DB_NAME=movie_reservation
-    depends_on:
-      - mysql
-  
-  mysql:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: movie_reservation
-    volumes:
-      - mysql_data:/var/lib/mysql
-
-volumes:
-  mysql_data:
-```
-
-Run:
-```bash
-docker-compose up -d
-```
-
-#### Option 3: Cloud Platforms
-
-**Heroku:**
-```bash
-heroku create movie-reservation-api
-heroku addons:create cleardb:ignite
-heroku config:set JWT_SECRET=your-secret
-git push heroku main
-```
-
-**AWS EC2 / DigitalOcean:**
-- Follow VPS deployment steps
-- Configure security groups/firewall
-- Set up SSL with Let's Encrypt
-- Use RDS/managed MySQL for database
-
----
-
 ## 📝 Project Structure
 
 ```
@@ -1042,48 +675,3 @@ Contributions are welcome! Please follow these steps:
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
-### Coding Standards
-- Use ES6+ JavaScript features
-- Follow RESTful API conventions
-- Write descriptive commit messages
-- Add comments for complex logic
-- Update documentation for new features
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👨‍💻 Author
-
-**Your Name**
-
-- Portfolio: [yourportfolio.com](https://yourportfolio.com)
-- LinkedIn: [linkedin.com/in/yourprofile](https://linkedin.com/in/yourprofile)
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
-
----
-
-## 🙏 Acknowledgments
-
-- [Roadmap.sh](https://roadmap.sh/projects/movie-reservation-system) for project inspiration
-- [Express.js](https://expressjs.com/) for the web framework
-- [Sequelize](https://sequelize.org/) for ORM
-- [MySQL](https://www.mysql.com/) for database
-
----
-
-## 📞 Support
-
-For support, email your.email@example.com or open an issue in the repository.
-
----
-
-⭐ **If you found this project helpful, please give it a star!**
-
-**Built with ❤️ using Node.js and Express**
