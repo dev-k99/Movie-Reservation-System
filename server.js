@@ -38,10 +38,12 @@ app.use('/api/reservations', reservationRoutes);
 app.use('/api/reports', reportRoutes);
 
 // 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'Endpoint not found'
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Movie Reservation API',
+    health: '/health',
+    docs: 'Coming soon'
   });
 });
 
@@ -68,7 +70,7 @@ const startServer = async () => {
     // Start server
     app.listen(PORT, () => {
       console.log(`🚀 Server is running on port ${PORT}`);
-      console.log(`📝 API Documentation: http://localhost:${PORT}/health`);
+      console.log(`📝 Health check available at /health`);
       console.log(`\n📧 Admin credentials:`);
       console.log(`   Email: admin@moviereservation.com`);
       console.log(`   Password: Admin123!\n`);
