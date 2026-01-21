@@ -9,13 +9,13 @@ const swaggerOptions = {
       description: 'API documentation for the Movie Reservation System'
     },
     servers: [
+        {
+        url: 'https://movie-reservation-api-h99d.onrender.com',
+        description: 'Production server',
+      },
       {
         url: 'http://localhost:3000',
         description: 'Local server'
-      },
-       {
-        url: 'https://movie-reservation-api-h99d.onrender.com',
-        description: 'Production server',
       },
     ],
     components: {

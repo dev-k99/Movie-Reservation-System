@@ -3,7 +3,7 @@
 
 ---
 
-[Live API Demo](https://movie-reservation-api-h99d.onrender.com/health)
+[Live API Demo](https://movie-reservation-api-h99d.onrender.com/api-docs/#/)
 
 ---
 
