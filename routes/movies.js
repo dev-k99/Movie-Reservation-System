@@ -3,6 +3,45 @@ const router = express.Router();
 const { models } = require('../database');
 const { authenticate, isAdmin } = require('../middleware');
 const { Op } = require('sequelize');
+/**
+ * @swagger
+ * tags:
+ *   name: Movies
+ *   description: Movie management and browsing
+ */
+
+
+/**
+ * @swagger
+ * /api/movies:
+ *   get:
+ *     summary: Get all movies
+ *     tags: [Movies]
+ *     parameters:
+ *       - in: query
+ *         name: genre
+ *         schema:
+ *           type: string
+ *         description: Filter movies by genre
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search by title or description
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *     responses:
+ *       200:
+ *         description: Paginated list of movies
+ */
 
 // Get all movies with optional filters
 router.get('/', async (req, res, next) => {
@@ -48,6 +87,57 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+
+/**
+ * @swagger
+ * /api/movies/meta/genres:
+ *   get:
+ *     summary: Get available movie genres
+ *     tags: [Movies]
+ *     responses:
+ *       200:
+ *         description: List of genres
+ */
+
+// Get movie genres
+router.get('/meta/genres', async (req, res, next) => {
+  try {
+    const genres = await models.Movie.findAll({
+      attributes: [[models.sequelize.fn('DISTINCT', models.sequelize.col('genre')), 'genre']],
+      raw: true
+    });
+
+    res.json({
+      success: true,
+      data: {
+        genres: genres.map(g => g.genre)
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+
+/**
+ * @swagger
+ * /api/movies/{id}:
+ *   get:
+ *     summary: Get a single movie by ID
+ *     tags: [Movies]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Movie details
+ *       404:
+ *         description: Movie not found
+ */
+
 // Get single movie
 router.get('/:id', async (req, res, next) => {
   try {
@@ -70,6 +160,51 @@ router.get('/:id', async (req, res, next) => {
     next(error);
   }
 });
+
+/**
+ * @swagger
+ * /api/movies:
+ *   post:
+ *     summary: Create a new movie (Admin only)
+ *     tags: [Movies]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - description
+ *               - genre
+ *               - duration
+ *               - releaseDate
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               posterImage:
+ *                 type: string
+ *               genre:
+ *                 type: string
+ *               duration:
+ *                 type: integer
+ *               rating:
+ *                 type: number
+ *               releaseDate:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       201:
+ *         description: Movie created successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ */
 
 // Create movie (admin only)
 router.post('/', authenticate, isAdmin, async (req, res, next) => {
@@ -103,6 +238,33 @@ router.post('/', authenticate, isAdmin, async (req, res, next) => {
     next(error);
   }
 });
+
+
+/**
+ * @swagger
+ * /api/movies/{id}:
+ *   put:
+ *     summary: Update an existing movie (Admin only)
+ *     tags: [Movies]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Movie updated successfully
+ *       404:
+ *         description: Movie not found
+ */
 
 // Update movie (admin only)
 router.put('/:id', authenticate, isAdmin, async (req, res, next) => {
@@ -140,6 +302,28 @@ router.put('/:id', authenticate, isAdmin, async (req, res, next) => {
   }
 });
 
+
+/**
+ * @swagger
+ * /api/movies/{id}:
+ *   delete:
+ *     summary: Delete a movie (Admin only)
+ *     tags: [Movies]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Movie deleted successfully
+ *       404:
+ *         description: Movie not found
+ */
+
 // Delete movie (admin only)
 router.delete('/:id', authenticate, isAdmin, async (req, res, next) => {
   try {
@@ -165,23 +349,6 @@ router.delete('/:id', authenticate, isAdmin, async (req, res, next) => {
   }
 });
 
-// Get movie genres
-router.get('/meta/genres', async (req, res, next) => {
-  try {
-    const genres = await models.Movie.findAll({
-      attributes: [[models.sequelize.fn('DISTINCT', models.sequelize.col('genre')), 'genre']],
-      raw: true
-    });
 
-    res.json({
-      success: true,
-      data: {
-        genres: genres.map(g => g.genre)
-      }
-    });
-  } catch (error) {
-    next(error);
-  }
-});
 
 module.exports = router;

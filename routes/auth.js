@@ -3,6 +3,43 @@ const router = express.Router();
 const { models } = require('../database');
 const { generateToken, authenticate, isAdmin } = require('../middleware');
 
+
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *               - firstName
+ *               - lastName
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: user@example.com
+ *               password:
+ *                 type: string
+ *                 example: Password123!
+ *               firstName:
+ *                 type: string
+ *                 example: John
+ *               lastName:
+ *                 type: string
+ *                 example: Doe
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *       400:
+ *         description: Validation error or email already exists
+ */
 // Register new user
 router.post('/register', async (req, res, next) => {
   try {
@@ -56,6 +93,34 @@ router.post('/register', async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Login user and return JWT token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: user@example.com
+ *               password:
+ *                 type: string
+ *                 example: Password123!
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *       401:
+ *         description: Invalid credentials
+ */
 // Login
 router.post('/login', async (req, res, next) => {
   try {
@@ -109,6 +174,21 @@ router.post('/login', async (req, res, next) => {
   }
 });
 
+
+/**
+ * @swagger
+ * /api/auth/me:
+ *   get:
+ *     summary: Get current logged-in user profile
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User profile returned
+ *       401:
+ *         description: Unauthorized
+ */
 // Get current user profile
 router.get('/me', authenticate, async (req, res, next) => {
   try {
@@ -129,6 +209,31 @@ router.get('/me', authenticate, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/auth/promote/{userId}:
+ *   put:
+ *     summary: Promote a user to admin (Admin only)
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         example: 1
+ *     responses:
+ *       200:
+ *         description: User promoted successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden (not admin)
+ *       404:
+ *         description: User not found
+ */
 // Promote user to admin (admin only)
 router.put('/promote/:userId', authenticate, isAdmin, async (req, res, next) => {
   try {

@@ -13,6 +13,38 @@ const generateBookingReference = () => {
   return reference;
 };
 
+/**
+ * @swagger
+ * /api/reservations:
+ *   post:
+ *     summary: Create a new reservation
+ *     tags: [Reservations]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - showtimeId
+ *               - seatIds
+ *             properties:
+ *               showtimeId:
+ *                 type: integer
+ *               seatIds:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *     responses:
+ *       201:
+ *         description: Reservation created successfully
+ *       400:
+ *         description: Invalid request or seats unavailable
+ *       401:
+ *         description: Unauthorized
+ */
 // Create reservation
 router.post('/', authenticate, async (req, res, next) => {
   const transaction = await sequelize.transaction();
@@ -187,6 +219,31 @@ router.post('/', authenticate, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/reservations/my-reservations:
+ *   get:
+ *     summary: Get reservations for the logged-in user
+ *     tags: [Reservations]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: upcoming
+ *         required: false
+ *         schema:
+ *           type: boolean
+ *     responses:
+ *       200:
+ *         description: User reservations retrieved successfully
+ *       401:
+ *         description: Unauthorized
+ */
 // Get user's reservations
 router.get('/my-reservations', authenticate, async (req, res, next) => {
   try {
@@ -262,6 +319,28 @@ router.get('/my-reservations', authenticate, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/reservations/{id}:
+ *   get:
+ *     summary: Get a single reservation by ID
+ *     tags: [Reservations]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Reservation retrieved successfully
+ *       404:
+ *         description: Reservation not found
+ *       401:
+ *         description: Unauthorized
+ */
 // Get single reservation
 router.get('/:id', authenticate, async (req, res, next) => {
   try {
@@ -304,6 +383,30 @@ router.get('/:id', authenticate, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/reservations/{id}:
+ *   delete:
+ *     summary: Cancel a reservation
+ *     tags: [Reservations]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Reservation cancelled successfully
+ *       400:
+ *         description: Cannot cancel past reservations
+ *       404:
+ *         description: Reservation not found
+ *       401:
+ *         description: Unauthorized
+ */
 // Cancel reservation
 router.delete('/:id', authenticate, async (req, res, next) => {
   const transaction = await sequelize.transaction();
@@ -373,6 +476,40 @@ router.delete('/:id', authenticate, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/reservations/admin/all:
+ *   get:
+ *     summary: Get all reservations (admin only)
+ *     tags: [Reservations]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *     responses:
+ *       200:
+ *         description: Reservations retrieved successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Admin access required
+ */
 // Get all reservations (admin only)
 router.get('/admin/all', authenticate, isAdmin, async (req, res, next) => {
   try {

@@ -224,47 +224,54 @@ http://localhost:3000/api
 
 ### 🎬 Movie Endpoints
 
-#### Get All Movies
-```http
-GET https://movie-reservation-api-h99d.onrender.com/api/movies
-```
+# API Documentation
+http://localhost:3000
+
+---
+
+## Auth
+
+### Register
+**POST** `/api/auth/register`  
+Register a new user
+
+### Login
+**POST** `/api/auth/login`  
+Login user and return JWT token
+
+### Get Profile
+**GET** `/api/auth/me`  
+Get current logged-in user profile
+
+---
+
+## Movies
+
+### Get All Movies
+**GET** `/api/movies`  
+Get all movies
+
+### Create Movie
+**POST** `/api/movies` *(Admin only)*  
+Create a new movie
+
+### Get Genres
+**GET** `/api/movies/meta/genres`  
+Get available movie genres
+
+### Get Movie by ID
+**GET** `/api/movies/{id}`  
+Get a single movie by ID
+
+### Update Movie
+**PUT** `/api/movies/{id}` *(Admin only)*  
+Update an existing movie
+
+### Delete Movie
+**DELETE** `/api/movies/{id}` *(Admin only)*  
+Delete a movie
 
 
-#### Get Single Movie
-```http
-GET /api/movies/:id
-```
-
-#### Create Movie (Admin Only)
-```http
-POST /api/movies
-
-{
-  "title": "The Matrix",
-  "description": "A hacker discovers the true nature of reality",
-  "posterImage": "https://example.com/matrix.jpg",
-  "genre": "Sci-Fi",
-  "duration": 136,
-  "rating": 8.7,
-  "releaseDate": "1999-03-31"
-}
-```
-
-#### Update Movie (Admin Only)
-```http
-PUT /api/movies/:id
-
-{
-  "rating": 9.0,
-  "posterImage": "https://example.com/new-poster.jpg"
-}
-```
-
-#### Delete Movie (Admin Only)
-```http
-DELETE /api/movies/:id
-Authorization: Bearer <admin_token>
-```
 
 #### Get All Genres
 ```http

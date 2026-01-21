@@ -4,6 +4,32 @@ const { models } = require('../database');
 const { authenticate, isAdmin } = require('../middleware');
 const { Op } = require('sequelize');
 
+
+
+/**
+ * @swagger
+ * /api/showtimes:
+ *   get:
+ *     summary: Get showtimes for a specific date (optionally filter by movie)
+ *     tags: [Showtimes]
+ *     parameters:
+ *       - in: query
+ *         name: date
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: '2026-01-21'
+ *       - in: query
+ *         name: movieId
+ *         required: false
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: List of showtimes
+ *       400:
+ *         description: Missing date parameter
+ */
 // Get showtimes for a specific date
 router.get('/', async (req, res, next) => {
   try {
@@ -55,6 +81,25 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+
+/**
+ * @swagger
+ * /api/showtimes/{id}:
+ *   get:
+ *     summary: Get single showtime with seats availability
+ *     tags: [Showtimes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Showtime details with seat availability
+ *       404:
+ *         description: Showtime not found
+ */
 // Get single showtime with available seats
 router.get('/:id', async (req, res, next) => {
   try {
@@ -126,6 +171,42 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
+
+/**
+ * @swagger
+ * /api/showtimes:
+ *   post:
+ *     summary: Create a new showtime (admin only)
+ *     tags: [Showtimes]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - movieId
+ *               - theaterId
+ *               - startTime
+ *               - price
+ *             properties:
+ *               movieId:
+ *                 type: integer
+ *               theaterId:
+ *                 type: integer
+ *               startTime:
+ *                 type: string
+ *                 format: date-time
+ *               price:
+ *                 type: number
+ *     responses:
+ *       201:
+ *         description: Showtime created successfully
+ *       400:
+ *         description: Invalid input or schedule conflict
+ */
 // Create showtime (admin only)
 router.post('/', authenticate, isAdmin, async (req, res, next) => {
   try {
@@ -212,6 +293,40 @@ router.post('/', authenticate, isAdmin, async (req, res, next) => {
   }
 });
 
+
+
+/**
+ * @swagger
+ * /api/showtimes/{id}:
+ *   put:
+ *     summary: Update a showtime (admin only)
+ *     tags: [Showtimes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               startTime:
+ *                 type: string
+ *                 format: date-time
+ *               price:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Showtime updated successfully
+ *       400:
+ *         description: Cannot update showtime with reservations
+ */
 // Update showtime (admin only)
 router.put('/:id', authenticate, isAdmin, async (req, res, next) => {
   try {
@@ -268,6 +383,28 @@ router.put('/:id', authenticate, isAdmin, async (req, res, next) => {
   }
 });
 
+
+
+/**
+ * @swagger
+ * /api/showtimes/{id}:
+ *   delete:
+ *     summary: Delete a showtime (admin only)
+ *     tags: [Showtimes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Showtime deleted successfully
+ *       400:
+ *         description: Cannot delete showtime with reservations
+ */
 // Delete showtime (admin only)
 router.delete('/:id', authenticate, isAdmin, async (req, res, next) => {
   try {

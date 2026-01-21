@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swagger');
 
 const { testConnection, syncDatabase, seedData } = require('./database');
 const { errorHandler, requestLogger } = require('./middleware');
@@ -20,6 +22,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger);
+
+// Swagger docs
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -43,7 +48,7 @@ app.get('/', (req, res) => {
     success: true,
     message: 'Movie Reservation API',
     health: '/health',
-    docs: 'Coming soon'
+   docs: '/api-docs'
   });
 });
 

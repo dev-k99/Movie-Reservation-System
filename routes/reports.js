@@ -4,6 +4,22 @@ const { models, sequelize } = require('../database');
 const { authenticate, isAdmin } = require('../middleware');
 const { Op } = require('sequelize');
 
+/**
+ * @swagger
+ * /api/reports/stats:
+ *   get:
+ *     summary: Get overall system statistics
+ *     tags: [Reports]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Overall statistics retrieved successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Admin access required
+ */
 // Get overall statistics
 router.get('/stats', authenticate, isAdmin, async (req, res, next) => {
   try {
@@ -50,6 +66,37 @@ router.get('/stats', authenticate, isAdmin, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/reports/revenue:
+ *   get:
+ *     summary: Get revenue report for a date range
+ *     tags: [Reports]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: startDate
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: date
+ *       - in: query
+ *         name: endDate
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: date
+ *     responses:
+ *       200:
+ *         description: Revenue report generated successfully
+ *       400:
+ *         description: Missing or invalid dates
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Admin access required
+ */
 // Get revenue report
 router.get('/revenue', authenticate, isAdmin, async (req, res, next) => {
   try {
@@ -133,6 +180,37 @@ router.get('/revenue', authenticate, isAdmin, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/reports/capacity:
+ *   get:
+ *     summary: Get theater capacity and occupancy report
+ *     tags: [Reports]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: startDate
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: date
+ *       - in: query
+ *         name: endDate
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: date
+ *     responses:
+ *       200:
+ *         description: Capacity report generated successfully
+ *       400:
+ *         description: Missing date parameters
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Admin access required
+ */
 // Get capacity report
 router.get('/capacity', authenticate, isAdmin, async (req, res, next) => {
   try {
@@ -208,6 +286,41 @@ router.get('/capacity', authenticate, isAdmin, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/reports/popular-movies:
+ *   get:
+ *     summary: Get most popular movies by bookings
+ *     tags: [Reports]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: startDate
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date
+ *       - in: query
+ *         name: endDate
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *     responses:
+ *       200:
+ *         description: Popular movies retrieved successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Admin access required
+ */
 // Get popular movies report
 router.get('/popular-movies', authenticate, isAdmin, async (req, res, next) => {
   try {
@@ -269,6 +382,38 @@ router.get('/popular-movies', authenticate, isAdmin, async (req, res, next) => {
   }
 });
 
+
+/**
+ * @swagger
+ * /api/reports/peak-times:
+ *   get:
+ *     summary: Get peak booking times
+ *     tags: [Reports]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: startDate
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: date
+ *       - in: query
+ *         name: endDate
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: date
+ *     responses:
+ *       200:
+ *         description: Peak times retrieved successfully
+ *       400:
+ *         description: Missing date parameters
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Admin access required
+ */
 // Get peak times report
 router.get('/peak-times', authenticate, isAdmin, async (req, res, next) => {
   try {
